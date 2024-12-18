@@ -176,3 +176,105 @@ Requirements
 
 
 ```npm install express whatsapp-web.js qrcode-terminal fs path```
+
+
+Session Management
+
+The server utilizes sessions to manage different WhatsApp Web instances. Sessions are stored persistently on the server and can be restored on restart.
+Creating a Session
+
+    Endpoint: /api/session/create
+
+    Method: GET
+
+    Parameters:
+        sessionId: (Required) A unique identifier for the session.
+        webhookUrl (Optional): URL for receiving incoming messages and events related to the session.
+
+    Response:
+        status: Indicates success ("success") or error ("error")
+        message: A descriptive message about the request
+        sessionId (if successful): The ID of the created session
+        sessionStatus (if successful): The current status of the session (e.g., "INITIALIZING", "READY")
+        qrCode (if successful and in WAITING_FOR_SCAN status): Base64 encoded QR code that needs to be scanned with the WhatsApp app to establish the connection.
+
+Getting Session Status
+
+    Endpoint: /api/session/status
+
+    Method: GET
+
+    Parameters:
+        sessionId: (Required) The ID of the session.
+
+    Response:
+        status: Indicates success ("success") or error ("error")
+        message: A descriptive message about the request
+        sessionStatus: An object containing details about the session status:
+            id: The ID of the session
+            status: The current status of the session (e.g., "READY", "DISCONNECTED")
+            lastActive: The timestamp of the last activity on the session
+            isReady: A boolean indicating whether the session is ready to send and receive messages
+
+Listing Active Sessions
+
+    Endpoint: /api/session/list
+
+    Method: GET
+
+    Response:
+        status: Indicates success ("success") or error ("error")
+        message: A descriptive message about the request
+        sessions: An array of objects representing active sessions. Each object contains:
+            id: The ID of the session
+            status: The current status of the session
+            webhookUrl (if provided): The webhook URL associated with the session
+
+Deleting a Session
+
+    Endpoint: /api/session/delete
+
+    Method: GET
+
+    Parameters:
+        sessionId: (Required) The ID of the session to delete.
+
+    Response:
+        status: Indicates success ("success") or error ("error")
+        message: A descriptive message about the request
+
+Group Management
+
+These endpoints require a valid session to be established beforehand. Use the session middleware as described in the next section.
+Getting All Groups
+
+    Endpoint: /api/groups
+
+    Method: GET
+
+    Response:
+        status: Indicates success ("success") or error ("error")
+        message: A descriptive message about the request
+        groups: An array of objects representing the user's WhatsApp groups. Each object contains:
+            id: The ID of the group
+            name: The name of the group
+            participants: The number of participants in the group
+            description: The description of the group (if available)
+
+Getting Information of a Specific Group
+
+    Endpoint: /api/groups/info
+
+    Method: GET
+
+    Parameters:
+        groupId: (Required) The ID of the group to get information about.
+
+    Response:
+        status: Indicates success ("success") or error ("error")
+        message: A descriptive message about the request
+        group (if successful): An object containing information about the group:
+            id: The ID of the group
+            name: The name of the group
+            description: The description of the group (if available)
+            `participants
